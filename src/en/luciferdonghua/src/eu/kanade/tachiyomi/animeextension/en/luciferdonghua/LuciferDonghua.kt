@@ -3,6 +3,7 @@ package eu.kanade.tachiyomi.animeextension.en.luciferdonghua
 import aniyomi.lib.dailymotionextractor.DailymotionExtractor
 import aniyomi.lib.okruextractor.OkruExtractor
 import aniyomi.lib.streamwishextractor.StreamWishExtractor
+import eu.kanade.tachiyomi.animeextension.en.luciferdonghua.extractors.RumbleExtractor
 import eu.kanade.tachiyomi.animesource.model.Video
 import eu.kanade.tachiyomi.multisrc.animestream.AnimeStream
 import kotlinx.coroutines.runBlocking
@@ -20,12 +21,14 @@ class LuciferDonghua :
     private val okruExtractor by lazy { OkruExtractor(client) }
     private val dailymotionExtractor by lazy { DailymotionExtractor(client, headers) }
     private val filelionsExtractor by lazy { StreamWishExtractor(client, headers) }
+    private val rumbleExtractor by lazy { RumbleExtractor(client, headers) }
 
     override fun getVideoList(url: String, name: String): List<Video> = runBlocking {
         val prefix = "$name - "
         when {
             url.contains("ok.ru") -> okruExtractor.videosFromUrl(url, prefix = prefix)
             url.contains("dailymotion") -> dailymotionExtractor.videosFromUrl(url, prefix)
+            url.contains("rumble") -> rumbleExtractor.videosFromUrl(url, prefix)
             url.contains("filelions") -> filelionsExtractor.videosFromUrl(url, videoNameGen = { quality -> "FileLions - $quality" })
             else -> emptyList()
         }

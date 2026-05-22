@@ -333,7 +333,7 @@ abstract class AnimeStream(
             client.newCall(GET(encodedData, headers)).execute().asJsoup()
         }
 
-        return doc.selectFirst("iframe[src~=.]")?.safeUrl()
+        return doc.selectFirst("#embed_holder iframe[src~=.]")?.safeUrl()
             ?: doc.selectFirst("meta[content~=.][itemprop=embedUrl]")!!.safeUrl("content")
     }
 
