@@ -31,6 +31,5 @@ class Tiodonghua :
         }
     }
 
-    override val fetchFilters: Boolean
-        get() = false
+    override val fetchFilters = false
 }

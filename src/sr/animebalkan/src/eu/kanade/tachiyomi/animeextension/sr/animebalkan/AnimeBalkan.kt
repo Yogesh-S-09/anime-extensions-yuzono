@@ -67,6 +67,5 @@ class AnimeBalkan :
         }
     }
 
-    override val prefQualityValues = arrayOf("1080p", "720p", "480p", "360p", "240p")
-    override val prefQualityEntries = prefQualityValues
+    override val prefQualityValues = listOf("1080p", "720p", "480p", "360p", "240p")
 }

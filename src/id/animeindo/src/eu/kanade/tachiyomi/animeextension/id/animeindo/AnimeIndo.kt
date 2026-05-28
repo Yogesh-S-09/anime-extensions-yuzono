@@ -20,6 +20,7 @@ import eu.kanade.tachiyomi.animesource.model.Video
 import eu.kanade.tachiyomi.multisrc.animestream.AnimeStream
 import eu.kanade.tachiyomi.multisrc.animestream.AnimeStreamFilters
 import eu.kanade.tachiyomi.network.GET
+import keiyoushi.utils.tryParse
 import kotlinx.coroutines.runBlocking
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.Request
@@ -47,7 +48,17 @@ class AnimeIndo :
             if (params.studios.isNotEmpty()) append(params.studios + "&")
         }
 
-        return GET("$baseUrl/browse?page=$page&title=$query&$multiString&status=${params.status}&type=${params.type}&order=${params.order}")
+        val urlBuilder = baseUrl.toHttpUrl().newBuilder().apply {
+            addPathSegment("browse")
+            addQueryParameter("page", page.toString())
+            if (query.isNotBlank()) addQueryParameter("title", query)
+            if (multiString.isNotBlank()) addEncodedQueryParameter(multiString.dropLast(1), "")
+            if (params.status.isNotBlank()) addQueryParameter("status", params.status)
+            if (params.type.isNotBlank()) addQueryParameter("type", params.type)
+            if (params.order.isNotBlank()) addQueryParameter("order", params.order)
+        }
+
+        return GET(urlBuilder.build().toString())
     }
 
     override fun searchAnimeSelector() = "div.animepost > div > a"
@@ -93,7 +104,7 @@ class AnimeIndo :
         val num = ahref.text()
         name = "Episode $num"
         episode_number = num.trim().toFloatOrNull() ?: 0F
-        date_upload = element.selectFirst("span.date")?.text().toDate()
+        date_upload = element.selectFirst("span.date")?.text().let { dateFormatter.tryParse(it) }
     }
 
     // ============================ Video Links =============================

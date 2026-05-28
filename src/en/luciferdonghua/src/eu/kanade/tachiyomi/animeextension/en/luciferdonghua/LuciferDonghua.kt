@@ -23,6 +23,7 @@ class LuciferDonghua :
 
     // ============================== Preferences ==============================
     override val prefQualityValues = listOf("2160p", "1440p", "1080p", "720p", "480p", "360p")
+    // override val prefQualityEntries = prefQualityValues
 
     private val SharedPreferences.ignorePreview
         by preferences.delegate(IGNORE_PREVIEW_KEY, IGNORE_PREVIEW_DEFAULT)

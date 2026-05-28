@@ -97,8 +97,7 @@ class AsyaAnimeleri :
     override val episodePrefix = "Bölüm"
 
     // ============================ Video Links =============================
-    override val prefQualityValues = arrayOf("1080p", "720p", "480p", "360p", "240p", "144p")
-    override val prefQualityEntries = prefQualityValues
+    override val prefQualityValues = listOf("1080p", "720p", "480p", "360p", "240p", "144p")
 
     private val vkExtractor by lazy { VkExtractor(client, headers) }
     private val okruExtractor by lazy { OkruExtractor(client) }

@@ -1,6 +1,6 @@
 package eu.kanade.tachiyomi.animeextension.pl.desuonline
 
-import androidx.preference.ListPreference
+import android.content.SharedPreferences
 import androidx.preference.PreferenceScreen
 import aniyomi.lib.googledriveextractor.GoogleDriveExtractor
 import aniyomi.lib.okruextractor.OkruExtractor
@@ -8,6 +8,8 @@ import aniyomi.lib.sibnetextractor.SibnetExtractor
 import eu.kanade.tachiyomi.animeextension.pl.desuonline.extractors.CDAExtractor
 import eu.kanade.tachiyomi.animesource.model.Video
 import eu.kanade.tachiyomi.multisrc.animestream.AnimeStream
+import keiyoushi.utils.addListPreference
+import keiyoushi.utils.delegate
 import kotlinx.coroutines.runBlocking
 import okhttp3.Response
 import java.text.SimpleDateFormat
@@ -54,9 +56,11 @@ class DesuOnline :
 
     // ============================= Utilities ==============================
 
+    private val SharedPreferences.serverPref by preferences.delegate(prefServerKey, prefServerDefault)
+
     override fun List<Video>.sort(): List<Video> {
-        val quality = preferences.getString(videoSortPrefKey, videoSortPrefDefault)!!
-        val server = preferences.getString(prefServerKey, prefServerDefault)!!
+        val quality = preferences.videoSortPref
+        val server = preferences.serverPref
 
         return sortedWith(
             compareBy(
@@ -72,20 +76,13 @@ class DesuOnline :
     override fun setupPreferenceScreen(screen: PreferenceScreen) {
         super.setupPreferenceScreen(screen) // Quality preferences
 
-        ListPreference(screen.context).apply {
-            key = prefServerKey
-            title = "Preferred server"
-            entries = arrayOf("CDA", "Sibnet", "Google Drive", "ok.ru")
-            entryValues = arrayOf("CDA", "sibnet", "gd", "okru")
-            setDefaultValue(prefServerDefault)
-            summary = "%s"
-
-            setOnPreferenceChangeListener { _, newValue ->
-                val selected = newValue as String
-                val index = findIndexOfValue(selected)
-                val entry = entryValues[index] as String
-                preferences.edit().putString(key, entry).commit()
-            }
-        }.also(screen::addPreference)
+        screen.addListPreference(
+            key = prefServerKey,
+            title = "Preferred server",
+            entries = listOf("CDA", "Sibnet", "Google Drive", "ok.ru"),
+            entryValues = listOf("CDA", "sibnet", "gd", "okru"),
+            default = prefServerDefault,
+            summary = "%s",
+        )
     }
 }

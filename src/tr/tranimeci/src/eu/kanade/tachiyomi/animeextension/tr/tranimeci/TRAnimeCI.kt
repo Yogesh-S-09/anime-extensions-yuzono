@@ -14,6 +14,7 @@ import eu.kanade.tachiyomi.multisrc.animestream.AnimeStream
 import eu.kanade.tachiyomi.multisrc.animestream.AnimeStreamFilters
 import eu.kanade.tachiyomi.network.GET
 import eu.kanade.tachiyomi.util.asJsoup
+import keiyoushi.utils.tryParse
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.Request
@@ -119,7 +120,7 @@ class TRAnimeCI :
         name = "Bölüm $epNum"
         episode_number = epNum.toFloat()
 
-        date_upload = element.selectFirst(".epl-date")?.text().toDate()
+        date_upload = element.selectFirst(".epl-date")?.text().let { dateFormatter.tryParse(it) }
     }
 
     // ============================ Video Links =============================

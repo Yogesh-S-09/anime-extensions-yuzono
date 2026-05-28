@@ -26,6 +26,7 @@ import keiyoushi.utils.addListPreference
 import keiyoushi.utils.delegate
 import keiyoushi.utils.getPreferencesLazy
 import keiyoushi.utils.parallelCatchingFlatMapBlocking
+import keiyoushi.utils.tryParse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
@@ -64,8 +65,10 @@ abstract class AnimeStream(
     protected open val prefQualityEntries: List<String>
         get() = prefQualityValues
 
-    protected open val videoSortPrefKey = prefQualityKey
-    protected open val videoSortPrefDefault = prefQualityDefault
+    protected open val videoSortPrefKey: String
+        get() = prefQualityKey
+    protected open val videoSortPrefDefault: String
+        get() = prefQualityDefault
 
     protected open val SharedPreferences.qualityPref by preferences.delegate(prefQualityKey, prefQualityDefault)
     protected open val SharedPreferences.videoSortPref by preferences.delegate(videoSortPrefKey, videoSortPrefDefault)
@@ -319,7 +322,7 @@ abstract class AnimeStream(
             episode_number = getEpisodeNumber(it)
         }
         element.selectFirst(".epl-sub")?.text()?.let { scanlator = it }
-        date_upload = element.selectFirst(".epl-date")?.text().toDate()
+        date_upload = element.selectFirst(".epl-date")?.text().let { dateFormatter.tryParse(it) }
     }
 
     // ============================ Video Links =============================
@@ -406,12 +409,6 @@ abstract class AnimeStream(
         ?.run {
             selectFirst("a")?.text() ?: ownText()
         }
-
-    protected open fun String?.toDate(): Long = this?.let {
-        runCatching {
-            dateFormatter.parse(trim())?.time
-        }.getOrNull()
-    } ?: 0L
 
     /**
      * Tries to get the image url via various possible attributes.
